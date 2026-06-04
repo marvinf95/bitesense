@@ -15,7 +15,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-//go:embed all:../../migrations
+//go:embed all:migrations
 var migrationsFS embed.FS
 
 func Open(path string) (*sql.DB, error) {
@@ -39,7 +39,7 @@ func Migrate(conn *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf("driver: %w", err)
 	}
-	src, err := iofs.New(migrationsFS, "../../migrations")
+	src, err := iofs.New(migrationsFS, "migrations")
 	if err != nil {
 		return fmt.Errorf("source: %w", err)
 	}

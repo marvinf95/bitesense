@@ -53,22 +53,24 @@ frontend-test: ## Run Flutter tests.
 	cd frontend && flutter test
 
 .PHONY: frontend-build-web
-frontend-build-web: frontend-pub-get ## Build Flutter Web release into frontend/web/.
+frontend-build-web: frontend-pub-get ## Build Flutter Web release into frontend/build/web/.
 	cd frontend && flutter build web --release --base-href / \
 		--dart-define=BITESENSE_API=$(API_URL)
-	@# Place the artefact where the Pi Dockerfile expects it (./web).
-	rm -rf frontend/web
-	mv frontend/build/web frontend/web
 
 # ---------------------------------------------------------------------------
 # Pi-Homelab deployment (BuildKit / pibuild)
 # ---------------------------------------------------------------------------
 
 .PHONY: pi-sync
-pi-sync: frontend-build-web ## Rsync backend + frontend (incl. built web/) to the Pi.
+pi-sync: frontend-build-web ## Rsync backend + frontend (incl. build/web/) + k8s to the Pi.
 	$(SSH) $(PI_USER)@$(PI_HOST) "mkdir -p $(PI_PATH)/backend $(PI_PATH)/frontend $(PI_PATH)/k8s"
 	$(RSYNC) backend/   $(PI_USER)@$(PI_HOST):$(PI_PATH)/backend/  --exclude=.env --exclude=data/
-	$(RSYNC) frontend/  $(PI_USER)@$(PI_HOST):$(PI_PATH)/frontend/ --exclude=.dart_tool/ --exclude=build/
+	# Frontend: ship sources + build/web/, but skip the Dart tool cache.
+	$(RSYNC) frontend/  $(PI_USER)@$(PI_HOST):$(PI_PATH)/frontend/ \
+		--exclude=.dart_tool/ \
+		--exclude=android/ \
+		--exclude=ios/ \
+		--exclude=.idea/
 	$(RSYNC) k8s/       $(PI_USER)@$(PI_HOST):$(PI_PATH)/k8s/
 
 .PHONY: pi-build-backend

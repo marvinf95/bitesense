@@ -11,7 +11,7 @@ class AuthState {
   final String? userId;
 }
 
-class AuthController extends StateNotifier<AuthState> with ChangeNotifier {
+class AuthController extends StateNotifier<AuthState> {
   AuthController(this._ref) : super(const AuthState(isAuthenticated: false)) {
     _restore();
   }
@@ -24,24 +24,29 @@ class AuthController extends StateNotifier<AuthState> with ChangeNotifier {
     final uid = await _storage.read(key: 'user_id');
     if (access != null && access.isNotEmpty) {
       state = AuthState(isAuthenticated: true, userId: uid);
-      notifyListeners();
     }
   }
 
   Future<void> login(String email, String password) async {
     final dio = _ref.read(apiClientProvider);
-    final resp = await dio.post('/auth/login', data: {'email': email, 'password': password});
-    await _persist(resp.data as Map<String, dynamic>);
+    final resp = await dio.post<Map<String, dynamic>>(
+      '/auth/login',
+      data: {'email': email, 'password': password},
+    );
+    await _persist(resp.data!);
   }
 
   Future<void> register(String email, String password, String locale) async {
     final dio = _ref.read(apiClientProvider);
-    final resp = await dio.post('/auth/register', data: {
-      'email': email,
-      'password': password,
-      'locale': locale,
-    });
-    await _persist(resp.data as Map<String, dynamic>);
+    final resp = await dio.post<Map<String, dynamic>>(
+      '/auth/register',
+      data: {
+        'email': email,
+        'password': password,
+        'locale': locale,
+      },
+    );
+    await _persist(resp.data!);
   }
 
   Future<void> logout() async {
@@ -49,7 +54,6 @@ class AuthController extends StateNotifier<AuthState> with ChangeNotifier {
     await _storage.delete(key: 'refresh_token');
     await _storage.delete(key: 'user_id');
     state = const AuthState(isAuthenticated: false);
-    notifyListeners();
   }
 
   Future<void> _persist(Map<String, dynamic> data) async {
@@ -57,10 +61,22 @@ class AuthController extends StateNotifier<AuthState> with ChangeNotifier {
     await _storage.write(key: 'refresh_token', value: data['refresh_token'] as String);
     await _storage.write(key: 'user_id', value: data['user_id'] as String);
     state = AuthState(isAuthenticated: true, userId: data['user_id'] as String);
-    notifyListeners();
   }
 }
 
 final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
   AuthController.new,
 );
+
+/// Listenable bridge for GoRouter's `refreshListenable`. Flips a counter every
+/// time the auth state transitions between authenticated and unauthenticated,
+/// which is the only signal GoRouter needs to re-run its redirect logic.
+class AuthListenable extends ValueNotifier<int> {
+  AuthListenable(Ref ref) : super(0) {
+    ref.listen<AuthState>(authControllerProvider, (prev, next) {
+      if (prev?.isAuthenticated != next.isAuthenticated) value++;
+    });
+  }
+}
+
+final authListenableProvider = Provider<AuthListenable>(AuthListenable.new);

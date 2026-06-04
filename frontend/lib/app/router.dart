@@ -15,12 +15,11 @@ import '../features/symptoms/symptoms_screen.dart';
 import 'home_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final auth = ref.watch(authControllerProvider);
   return GoRouter(
     initialLocation: '/meals',
-    refreshListenable: ref.read(authControllerProvider.notifier),
+    refreshListenable: ref.watch(authListenableProvider),
     redirect: (context, state) {
-      final loggedIn = auth.isAuthenticated;
+      final loggedIn = ref.read(authControllerProvider).isAuthenticated;
       final loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
       if (!loggedIn && !loggingIn) return '/login';
       if (loggedIn && loggingIn) return '/meals';

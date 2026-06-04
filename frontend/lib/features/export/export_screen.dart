@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -25,20 +26,21 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
     try {
       final dio = ref.read(apiClientProvider);
       final locale = Localizations.localeOf(context).languageCode;
-      final resp = await dio.get(
+      final resp = await dio.get<List<int>>(
         '/export/pdf',
         queryParameters: {
           'from': _from.toUtc().toIso8601String(),
           'to': _to.toUtc().toIso8601String(),
           'locale': locale,
         },
-        options: const _PdfOptions(),
+        options: Options(responseType: ResponseType.bytes),
       );
-      // On web/mobile the bytes are downloaded; a real implementation hands them off
-      // to `printing` package for share/print. Keep MVP simple here.
+      // On web/mobile the bytes can be handed off to the `printing` package for
+      // share/print. Keep MVP simple here — just confirm the size.
       if (!mounted) return;
+      final size = resp.data?.length ?? 0;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF ${resp.data.length} bytes')),
+        SnackBar(content: Text('PDF $size bytes')),
       );
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -84,6 +86,3 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   }
 }
 
-class _PdfOptions {
-  const _PdfOptions();
-}
