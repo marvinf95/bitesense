@@ -9,8 +9,12 @@ resources:
   - deployment-frontend.yaml
   - ingress.yaml
   - networkpolicy.yaml
+
+# Default to on-Pi locally-built images. Overlays override the tag (typically the
+# git short SHA after a `make build-images` run). For external clusters that use
+# a real registry, switch to overlays/portable which retargets to GHCR.
 images:
-  - name: ghcr.io/marvinf95/bitesense-backend
-    newTag: latest
-  - name: ghcr.io/marvinf95/bitesense-frontend
-    newTag: latest
+  - name: bitesense-backend
+    newTag: local
+  - name: bitesense-frontend
+    newTag: local

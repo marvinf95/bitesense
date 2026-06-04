@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bitesense
+resources:
+  - ../../base
+  - ingressroute.yaml
+
+# Switch image refs to a real registry (assumes images were built via
+# `make image-build-portable`). Also retarget pullPolicy via the patch below.
+images:
+  - name: bitesense-backend
+    newName: ghcr.io/marvinf95/bitesense-backend
+    newTag: v0.1.0
+  - name: bitesense-frontend
+    newName: ghcr.io/marvinf95/bitesense-frontend
+    newTag: v0.1.0
+
+# 1. Drop the Tailscale-Operator Ingress from base (the portable overlay uses a
+#    Traefik IngressRoute instead).
+# 2. Pods should pull from the registry, not require pre-loaded images.
+patches:
+  - target:
+      kind: Ingress
+      name: bitesense
+    patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: bitesense
+  - target:
+      kind: Deployment
+      labelSelector: "app.kubernetes.io/name in (bitesense-backend,bitesense-frontend)"
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

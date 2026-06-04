@@ -88,7 +88,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
-          file: ./frontend/Dockerfile
+          # GHCR / portable builds use the self-contained Flutter SDK image.
+          # The slim Dockerfile is reserved for the Pi-Homelab on-Pi BuildKit flow.
+          file: ./frontend/Dockerfile.fullbuild
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

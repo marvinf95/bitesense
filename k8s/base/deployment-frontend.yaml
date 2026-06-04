@@ -24,8 +24,10 @@ spec:
           type: RuntimeDefault
       containers:
         - name: web
-          image: ghcr.io/marvinf95/bitesense-frontend:latest
-          imagePullPolicy: IfNotPresent
+          # Built on the Pi via `pibuild frontend bitesense-frontend:<tag>` after
+          # `flutter build web` produced `web/` on the dev notebook. See Makefile.
+          image: bitesense-frontend:local
+          imagePullPolicy: Never
           ports:
             - name: http
               containerPort: 8080

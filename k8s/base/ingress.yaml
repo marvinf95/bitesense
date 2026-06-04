@@ -1,24 +1,21 @@
-# Traefik IngressRoute exposing the frontend; the backend lives under /api/v1.
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+# Tailscale Operator picks this up (ingressClassName: tailscale) and creates a
+# Tailnet node `bitesense` reachable at https://bitesense.<tailnet>.ts.net with
+# an auto-issued Let's Encrypt cert.
+#
+# Both /api/ and / are served by the frontend pod; nginx proxies /api/ to the
+# backend Service in-cluster. This mirrors the MYK/Goalbooze pattern on the
+# Pi-Homelab cluster.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
   name: bitesense
   namespace: bitesense
-  annotations:
-    # Exposes this route on the Tailnet via the Tailscale K8s operator.
-    tailscale.com/expose: "true"
-    tailscale.com/hostname: "bitesense"
 spec:
-  entryPoints: [websecure]
-  routes:
-    - match: PathPrefix(`/api/`)
-      kind: Rule
-      services:
-        - name: bitesense-backend
-          port: 80
-    - match: PathPrefix(`/`)
-      kind: Rule
-      services:
-        - name: bitesense-frontend
-          port: 80
-  tls: {}
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: bitesense-frontend
+      port:
+        number: 80
+  tls:
+    - hosts: [bitesense]

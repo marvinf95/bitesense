@@ -2,12 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
-# Replace `sealed-secrets.example.yaml` from base with your real SealedSecret here:
+# Replace the example secret from base with a real SealedSecret here:
 # patches:
 #   - target: { kind: Secret, name: bitesense-secrets }
 #     path: secret-patch.yaml
+# Tag bump per release; the Makefile sets these via `kustomize edit set image`.
 images:
-  - name: ghcr.io/marvinf95/bitesense-backend
+  - name: bitesense-backend
     newTag: v0.1.0
-  - name: ghcr.io/marvinf95/bitesense-frontend
+  - name: bitesense-frontend
     newTag: v0.1.0
