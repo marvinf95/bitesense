@@ -263,14 +263,17 @@ func loadItemsForMeals(r *http.Request, db *sql.DB, mealIDs []any) (map[string][
 	}
 	placeholders := strings.Repeat("?,", len(mealIDs))
 	placeholders = strings.TrimRight(placeholders, ",")
-	// Only the literal `?,?,...` placeholders are interpolated; meal_ids are bound parameters.
-	q := fmt.Sprintf(`
+	// Build the IN-clause query. Only the literal `?,?,...` placeholders are
+	// interpolated; the meal_ids themselves are passed as bound parameters
+	// below, so this is safe despite gosec's blanket G201 warning.
+	const tmpl = `
 		SELECT mi.id, mi.meal_id, mi.name, mi.display_name, mi.quantity_g, mi.off_id, mi.confidence,
 		       COALESCE(GROUP_CONCAT(t.tag), '')
 		FROM meal_items mi
 		LEFT JOIN meal_item_tags t ON t.meal_item_id = mi.id
 		WHERE mi.meal_id IN (%s)
-		GROUP BY mi.id`, placeholders) //nolint:gosec // G201: placeholders only, ids are bound
+		GROUP BY mi.id`
+	q := fmt.Sprintf(tmpl, placeholders) //nolint:gosec // G201: placeholders only, ids bound below
 	rows, err := db.QueryContext(r.Context(), q, mealIDs...)
 	if err != nil {
 		return nil, err

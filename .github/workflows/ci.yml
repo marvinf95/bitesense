@@ -64,7 +64,11 @@ jobs:
         # ARB → Dart bindings under lib/l10n/generated/. `flutter pub get` runs the
         # generator on some Flutter versions but not all CI images, so do it
         # explicitly before any analyzer step depends on the generated files.
-        run: flutter gen-l10n
+        # The generator emits unformatted output; run dart format on it first so
+        # the format check below stays strict on hand-written code only.
+        run: |
+          flutter gen-l10n
+          dart format lib/l10n/generated/
 
       - name: Analyze
         run: dart analyze --fatal-infos
