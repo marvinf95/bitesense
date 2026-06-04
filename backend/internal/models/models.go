@@ -11,16 +11,16 @@ type User struct {
 }
 
 type Meal struct {
-	ID         string     `json:"id"`
-	UserID     string     `json:"user_id"`
-	EatenAt    time.Time  `json:"eaten_at"`
-	Title      *string    `json:"title,omitempty"`
-	Notes      *string    `json:"notes,omitempty"`
-	Source     string     `json:"source"`
-	PhotoPath  *string    `json:"photo_path,omitempty"`
-	Items      []MealItem `json:"items"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	ID        string     `json:"id"`
+	UserID    string     `json:"user_id"`
+	EatenAt   time.Time  `json:"eaten_at"`
+	Title     *string    `json:"title,omitempty"`
+	Notes     *string    `json:"notes,omitempty"`
+	Source    string     `json:"source"`
+	PhotoPath *string    `json:"photo_path,omitempty"`
+	Items     []MealItem `json:"items"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 type MealItem struct {

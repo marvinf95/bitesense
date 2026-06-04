@@ -34,7 +34,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _error = null;
     });
     try {
-      final localeCode = PlatformDispatcher.instance.locale.languageCode == 'de' ? 'de' : 'en';
+      final localeCode =
+          PlatformDispatcher.instance.locale.languageCode == 'de' ? 'de' : 'en';
       await ref.read(authControllerProvider.notifier).register(
             _email.text.trim(),
             _password.text,
@@ -42,7 +43,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           );
       if (mounted) context.go('/meals');
     } catch (_) {
-      if (mounted) setState(() => _error = AppLocalizations.of(context).errorGeneric);
+      if (mounted) {
+        setState(() => _error = AppLocalizations.of(context).errorGeneric);
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -69,15 +72,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextFormField(
                 controller: _password,
                 obscureText: true,
-                decoration: InputDecoration(labelText: t.authPassword, helperText: t.authPasswordHint),
-                validator: (v) => (v ?? '').length >= 8 ? null : t.authPasswordTooShort,
+                decoration: InputDecoration(
+                  labelText: t.authPassword,
+                  helperText: t.authPasswordHint,
+                ),
+                validator: (v) =>
+                    (v ?? '').length >= 8 ? null : t.authPasswordTooShort,
               ),
               const SizedBox(height: 16),
-              if (_error != null) Text(_error!, style: const TextStyle(color: Colors.red)),
+              if (_error != null)
+                Text(_error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _loading ? null : _submit,
-                child: _loading ? const CircularProgressIndicator() : Text(t.authRegister),
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : Text(t.authRegister),
               ),
               TextButton(
                 onPressed: () => context.go('/login'),

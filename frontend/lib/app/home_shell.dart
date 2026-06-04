@@ -29,10 +29,22 @@ class HomeShell extends StatelessWidget {
         selectedIndex: index,
         onDestinationSelected: (i) => context.go(_tabs[i]),
         destinations: [
-          NavigationDestination(icon: const Icon(Icons.restaurant), label: t.navMeals),
-          NavigationDestination(icon: const Icon(Icons.healing), label: t.navSymptoms),
-          NavigationDestination(icon: const Icon(Icons.insights), label: t.navAnalytics),
-          NavigationDestination(icon: const Icon(Icons.settings), label: t.navSettings),
+          NavigationDestination(
+            icon: const Icon(Icons.restaurant),
+            label: t.navMeals,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.healing),
+            label: t.navSymptoms,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.insights),
+            label: t.navAnalytics,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.settings),
+            label: t.navSettings,
+          ),
         ],
       ),
     );

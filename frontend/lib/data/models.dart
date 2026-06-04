@@ -128,7 +128,8 @@ class CorrelationSuspect {
   final double avgSeverity;
   final String tier; // STRONG_SUSPECT|SUSPECT|WEAK_SIGNAL
 
-  factory CorrelationSuspect.fromJson(Map<String, dynamic> j) => CorrelationSuspect(
+  factory CorrelationSuspect.fromJson(Map<String, dynamic> j) =>
+      CorrelationSuspect(
         food: j['food'] as String,
         symptomType: j['symptom_type'] as String,
         riskRatio: (j['risk_ratio'] as num).toDouble(),

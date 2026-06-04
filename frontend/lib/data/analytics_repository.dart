@@ -9,7 +9,7 @@ class AnalyticsRepository {
   final Dio _dio;
 
   Future<List<CorrelationSuspect>> topSuspects() async {
-    final resp = await _dio.get('/analytics/correlations');
+    final resp = await _dio.get<dynamic>('/analytics/correlations');
     final list = (resp.data['suspects'] as List).cast<Map<String, dynamic>>();
     return list.map(CorrelationSuspect.fromJson).toList();
   }

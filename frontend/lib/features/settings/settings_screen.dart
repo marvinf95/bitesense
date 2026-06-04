@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,19 +24,22 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Auto'),
             value: null,
             groupValue: locale,
-            onChanged: (v) => ref.read(localeControllerProvider.notifier).set(v),
+            onChanged: (v) =>
+                ref.read(localeControllerProvider.notifier).set(v),
           ),
           RadioListTile<Locale?>(
             title: const Text('English'),
             value: const Locale('en'),
             groupValue: locale,
-            onChanged: (v) => ref.read(localeControllerProvider.notifier).set(v),
+            onChanged: (v) =>
+                ref.read(localeControllerProvider.notifier).set(v),
           ),
           RadioListTile<Locale?>(
             title: const Text('Deutsch'),
             value: const Locale('de'),
             groupValue: locale,
-            onChanged: (v) => ref.read(localeControllerProvider.notifier).set(v),
+            onChanged: (v) =>
+                ref.read(localeControllerProvider.notifier).set(v),
           ),
           const Divider(),
           ListTile(
@@ -56,7 +57,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: Text(t.settingsDeleteAccount, style: const TextStyle(color: Colors.red)),
+            title: Text(
+              t.settingsDeleteAccount,
+              style: const TextStyle(color: Colors.red),
+            ),
             onTap: () => _confirmDelete(context, ref),
           ),
         ],
@@ -71,14 +75,20 @@ class SettingsScreen extends ConsumerWidget {
       builder: (_) => AlertDialog(
         content: Text(t.settingsDeleteConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.actionCancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(t.actionDelete)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(t.actionCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(t.actionDelete),
+          ),
         ],
       ),
     );
     if (ok != true) return;
     final dio = ref.read(apiClientProvider);
-    await dio.delete('/auth/account');
+    await dio.delete<dynamic>('/auth/account');
     await ref.read(authControllerProvider.notifier).logout();
     if (context.mounted) context.go('/login');
   }

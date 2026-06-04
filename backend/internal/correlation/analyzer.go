@@ -176,10 +176,10 @@ func (a *Analyzer) TopSuspects(r *http.Request, userID string) ([]api.Suspect, e
 			symptomaticAny += len(bb.mealsWithMatchedSym)
 		}
 		// Risk Ratio and Fisher's exact.
-		a11 := len(b.mealsWithMatchedSym)                                 // exposed + symptomatic
-		a12 := exposedMealCount - a11                                     // exposed + asymptomatic
-		a21 := max0(symptomaticAny - a11)                                 // unexposed + symptomatic (rough)
-		a22 := max0(unexposedMealCount - a21)                             // unexposed + asymptomatic
+		a11 := len(b.mealsWithMatchedSym)     // exposed + symptomatic
+		a12 := exposedMealCount - a11         // exposed + asymptomatic
+		a21 := max0(symptomaticAny - a11)     // unexposed + symptomatic (rough)
+		a22 := max0(unexposedMealCount - a21) // unexposed + asymptomatic
 		n := a11 + a12 + a21 + a22
 		if n < 5 || a11 < 1 {
 			continue

@@ -83,7 +83,7 @@ func (e *Exporter) renderMeals(pdf *gofpdf.Fpdf, r *http.Request, userID string,
 	}
 	defer rows.Close()
 
-	any := false
+	hasRows := false
 	pdf.SetFillColor(240, 240, 240)
 	pdf.SetFont("Helvetica", "B", 9)
 	pdf.CellFormat(35, 6, s.PDFColTime, "1", 0, "L", true, 0, "")
@@ -97,13 +97,13 @@ func (e *Exporter) renderMeals(pdf *gofpdf.Fpdf, r *http.Request, userID string,
 		if err := rows.Scan(&id, &eatenAt, &title, &items, &tags); err != nil {
 			return err
 		}
-		any = true
+		hasRows = true
 		pdf.CellFormat(35, 5, eatenAt.Format("2006-01-02 15:04"), "1", 0, "L", false, 0, "")
 		pdf.CellFormat(40, 5, truncate(title, 22), "1", 0, "L", false, 0, "")
 		pdf.CellFormat(70, 5, truncate(items, 50), "1", 0, "L", false, 0, "")
 		pdf.CellFormat(35, 5, truncate(tags, 22), "1", 1, "L", false, 0, "")
 	}
-	if !any {
+	if !hasRows {
 		pdf.MultiCell(0, 6, s.PDFEmptyMeals, "", "L", false)
 	}
 	pdf.Ln(6)
@@ -130,7 +130,7 @@ func (e *Exporter) renderSymptoms(pdf *gofpdf.Fpdf, r *http.Request, userID stri
 	pdf.CellFormat(25, 6, s.PDFColSeverity, "1", 0, "L", true, 0, "")
 	pdf.CellFormat(80, 6, "Notes", "1", 1, "L", true, 0, "")
 	pdf.SetFont("Helvetica", "", 9)
-	any := false
+	hasRows := false
 	for rows.Next() {
 		var occurredAt time.Time
 		var typ string
@@ -140,7 +140,7 @@ func (e *Exporter) renderSymptoms(pdf *gofpdf.Fpdf, r *http.Request, userID stri
 		if err := rows.Scan(&occurredAt, &typ, &severity, &br, &notes); err != nil {
 			return err
 		}
-		any = true
+		hasRows = true
 		extra := ""
 		if br > 0 {
 			extra = fmt.Sprintf(" (Bristol %d)", br)
@@ -150,7 +150,7 @@ func (e *Exporter) renderSymptoms(pdf *gofpdf.Fpdf, r *http.Request, userID stri
 		pdf.CellFormat(25, 5, fmt.Sprintf("%d/10", severity), "1", 0, "L", false, 0, "")
 		pdf.CellFormat(80, 5, truncate(notes, 55), "1", 1, "L", false, 0, "")
 	}
-	if !any {
+	if !hasRows {
 		pdf.MultiCell(0, 6, s.PDFEmptySymptoms, "", "L", false)
 	}
 	pdf.Ln(6)

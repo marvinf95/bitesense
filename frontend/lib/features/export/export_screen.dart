@@ -18,7 +18,12 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   bool _busy = false;
 
   Future<DateTime?> _pick(DateTime initial) {
-    return showDatePicker(context: context, initialDate: initial, firstDate: DateTime(2020), lastDate: DateTime(2100));
+    return showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
   }
 
   Future<void> _generate() async {
@@ -50,7 +55,8 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final df = DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag());
+    final df =
+        DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag());
     return Scaffold(
       appBar: AppBar(title: Text(t.exportTitle)),
       body: ListView(
@@ -85,4 +91,3 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
     );
   }
 }
-

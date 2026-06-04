@@ -163,23 +163,23 @@ func splitIngredients(s string) []string {
 // canonicalAllergens maps OFF tags (e.g. "en:gluten") to our internal tag namespace.
 func canonicalAllergens(tags []string) []string {
 	mapping := map[string]string{
-		"en:gluten":             models.TagGluten,
-		"en:milk":               models.TagLactose,
-		"en:lactose":            models.TagLactose,
-		"en:nuts":               models.TagNuts,
-		"en:peanuts":            models.TagNuts,
-		"en:tree-nuts":          models.TagNuts,
-		"en:eggs":               models.TagEgg,
-		"en:soybeans":           models.TagSoy,
-		"en:soy":                models.TagSoy,
-		"en:fructose":           models.TagFructose,
-		"en:fish":               models.TagFish,
-		"en:crustaceans":        models.TagShellfish,
-		"en:molluscs":           models.TagShellfish,
+		"en:gluten":                        models.TagGluten,
+		"en:milk":                          models.TagLactose,
+		"en:lactose":                       models.TagLactose,
+		"en:nuts":                          models.TagNuts,
+		"en:peanuts":                       models.TagNuts,
+		"en:tree-nuts":                     models.TagNuts,
+		"en:eggs":                          models.TagEgg,
+		"en:soybeans":                      models.TagSoy,
+		"en:soy":                           models.TagSoy,
+		"en:fructose":                      models.TagFructose,
+		"en:fish":                          models.TagFish,
+		"en:crustaceans":                   models.TagShellfish,
+		"en:molluscs":                      models.TagShellfish,
 		"en:sulphur-dioxide-and-sulphites": models.TagSulphites,
-		"en:sesame-seeds":       models.TagSesame,
-		"en:mustard":            models.TagMustard,
-		"en:celery":             models.TagCelery,
+		"en:sesame-seeds":                  models.TagSesame,
+		"en:mustard":                       models.TagMustard,
+		"en:celery":                        models.TagCelery,
 	}
 	seen := map[string]bool{}
 	out := []string{}
@@ -199,14 +199,13 @@ func parseGrams(s string) float64 {
 	s = strings.ToLower(strings.TrimSpace(s))
 	var n float64
 	for _, ch := range s {
-		if ch >= '0' && ch <= '9' {
+		switch {
+		case ch >= '0' && ch <= '9':
 			n = n*10 + float64(ch-'0')
-		} else if ch == '.' || ch == ',' {
+		case ch == '.' || ch == ',' || ch == ' ':
 			continue
-		} else if ch == ' ' {
-			continue
-		} else {
-			break
+		default:
+			return n
 		}
 	}
 	return n

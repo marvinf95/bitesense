@@ -32,7 +32,8 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
 
   Future<void> _pickFromCamera() async {
     final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+    final file =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
     if (file == null) return;
     if (!mounted) return;
     showDialog<void>(
@@ -41,7 +42,8 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
     try {
-      final mealId = await ref.read(mealsRepositoryProvider).createFromImage(file.path);
+      final mealId =
+          await ref.read(mealsRepositoryProvider).createFromImage(file.path);
       if (!mounted) return;
       Navigator.of(context).pop();
       ref.invalidate(mealsListProvider);
@@ -63,7 +65,8 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
     );
     if (ean == null || !mounted) return;
     try {
-      final mealId = await ref.read(mealsRepositoryProvider).createFromBarcode(ean);
+      final mealId =
+          await ref.read(mealsRepositoryProvider).createFromBarcode(ean);
       if (!mounted) return;
       ref.invalidate(mealsListProvider);
       context.go('/meals/$mealId');
@@ -81,12 +84,15 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
     try {
       final items = _items
           .where((d) => d.name.text.trim().isNotEmpty)
-          .map((d) => MealItem(
-                id: '', mealId: '',
-                name: d.name.text.trim().toLowerCase(),
-                displayName: d.name.text.trim(),
-                tags: d.tags.toList(),
-              ))
+          .map(
+            (d) => MealItem(
+              id: '',
+              mealId: '',
+              name: d.name.text.trim().toLowerCase(),
+              displayName: d.name.text.trim(),
+              tags: d.tags.toList(),
+            ),
+          )
           .toList();
       await ref.read(mealsRepositoryProvider).create(
             eatenAt: _eatenAt,
@@ -113,13 +119,30 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Row(children: [
-              Expanded(child: OutlinedButton.icon(onPressed: _pickFromCamera, icon: const Icon(Icons.camera_alt), label: Text(t.mealPhotoCapture))),
-              const SizedBox(width: 8),
-              Expanded(child: OutlinedButton.icon(onPressed: _scanBarcode, icon: const Icon(Icons.qr_code_scanner), label: Text(t.mealBarcodeScan))),
-            ]),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _pickFromCamera,
+                    icon: const Icon(Icons.camera_alt),
+                    label: Text(t.mealPhotoCapture),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _scanBarcode,
+                    icon: const Icon(Icons.qr_code_scanner),
+                    label: Text(t.mealBarcodeScan),
+                  ),
+                ),
+              ],
+            ),
             const Divider(height: 32),
-            TextFormField(controller: _title, decoration: InputDecoration(labelText: t.mealFieldTitle)),
+            TextFormField(
+              controller: _title,
+              decoration: InputDecoration(labelText: t.mealFieldTitle),
+            ),
             const SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -127,15 +150,34 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
               subtitle: Text('${_eatenAt.toLocal()}'),
               trailing: const Icon(Icons.edit),
               onTap: () async {
-                final picked = await showDatePicker(context: context, initialDate: _eatenAt, firstDate: DateTime(2020), lastDate: DateTime(2100));
-                if (picked == null || !mounted) return;
-                final tm = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_eatenAt));
-                if (!mounted) return;
-                setState(() => _eatenAt = DateTime(picked.year, picked.month, picked.day, tm?.hour ?? 0, tm?.minute ?? 0));
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: _eatenAt,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2100),
+                );
+                if (picked == null || !context.mounted) return;
+                final tm = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.fromDateTime(_eatenAt),
+                );
+                if (!context.mounted) return;
+                setState(
+                  () => _eatenAt = DateTime(
+                    picked.year,
+                    picked.month,
+                    picked.day,
+                    tm?.hour ?? 0,
+                    tm?.minute ?? 0,
+                  ),
+                );
               },
             ),
             const SizedBox(height: 12),
-            Text(t.mealFieldItems, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              t.mealFieldItems,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             ..._items.map(_buildItemRow),
             TextButton.icon(
               onPressed: () => setState(() => _items.add(_DraftItem())),
@@ -143,7 +185,11 @@ class _MealAddScreenState extends ConsumerState<MealAddScreen> {
               label: Text(t.mealAddItem),
             ),
             const SizedBox(height: 12),
-            TextFormField(controller: _notes, decoration: InputDecoration(labelText: t.mealFieldNotes), maxLines: 3),
+            TextFormField(
+              controller: _notes,
+              decoration: InputDecoration(labelText: t.mealFieldNotes),
+              maxLines: 3,
+            ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _saving ? null : _saveText,

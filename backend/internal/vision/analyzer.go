@@ -66,7 +66,7 @@ func (a *Analyzer) AnalyzeFromUpload(r *http.Request, userID string) (string, er
 	}
 	ext := extFromMime(mimeType)
 	relPath := filepath.Join(userID, hashHex+ext)
-	if err := os.WriteFile(filepath.Join(a.UploadDir, relPath), raw, 0o640); err != nil {
+	if err := os.WriteFile(filepath.Join(a.UploadDir, relPath), raw, 0o600); err != nil {
 		return "", err
 	}
 
@@ -112,7 +112,7 @@ func (a *Analyzer) runWithCache(ctx context.Context, hash string, raw []byte, mi
 	if err == nil && cached != "" {
 		var r Result
 		if jsonErr := json.Unmarshal([]byte(cached), &r); jsonErr == nil {
-			r.Provider = r.Provider + ":cache"
+			r.Provider += ":cache"
 			return &r, nil
 		}
 	}

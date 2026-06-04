@@ -4,7 +4,11 @@ import '../../../data/models.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 class AllergenChips extends StatelessWidget {
-  const AllergenChips({required this.selected, required this.onChanged, super.key});
+  const AllergenChips({
+    required this.selected,
+    required this.onChanged,
+    super.key,
+  });
   final Set<String> selected;
   final ValueChanged<Set<String>> onChanged;
 

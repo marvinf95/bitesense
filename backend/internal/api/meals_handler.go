@@ -20,11 +20,11 @@ type MealsHandler struct {
 }
 
 type mealRequest struct {
-	EatenAt time.Time          `json:"eaten_at"`
-	Title   *string            `json:"title,omitempty"`
-	Notes   *string            `json:"notes,omitempty"`
-	Source  string             `json:"source"` // text|image|barcode|favorite
-	Items   []mealItemRequest  `json:"items"`
+	EatenAt time.Time         `json:"eaten_at"`
+	Title   *string           `json:"title,omitempty"`
+	Notes   *string           `json:"notes,omitempty"`
+	Source  string            `json:"source"` // text|image|barcode|favorite
+	Items   []mealItemRequest `json:"items"`
 }
 
 type mealItemRequest struct {
@@ -214,8 +214,8 @@ func (h *MealsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 type patchMealReq struct {
-	Title   *string  `json:"title,omitempty"`
-	Notes   *string  `json:"notes,omitempty"`
+	Title   *string    `json:"title,omitempty"`
+	Notes   *string    `json:"notes,omitempty"`
 	EatenAt *time.Time `json:"eaten_at,omitempty"`
 }
 
@@ -242,7 +242,9 @@ func (h *MealsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		args = append(args, *req.EatenAt)
 	}
 	args = append(args, id, uid)
-	q := fmt.Sprintf(`UPDATE meals SET %s WHERE id = ? AND user_id = ?`, strings.Join(sets, ", "))
+	// `sets` is built from a fixed allowlist of column assignments above; no
+	// user input is interpolated, so the SQL is safe.
+	q := fmt.Sprintf(`UPDATE meals SET %s WHERE id = ? AND user_id = ?`, strings.Join(sets, ", ")) //nolint:gosec // G201: column allowlist, no user input
 	res, err := h.DB.ExecContext(r.Context(), q, args...)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "update")
@@ -261,13 +263,14 @@ func loadItemsForMeals(r *http.Request, db *sql.DB, mealIDs []any) (map[string][
 	}
 	placeholders := strings.Repeat("?,", len(mealIDs))
 	placeholders = strings.TrimRight(placeholders, ",")
+	// Only the literal `?,?,...` placeholders are interpolated; meal_ids are bound parameters.
 	q := fmt.Sprintf(`
 		SELECT mi.id, mi.meal_id, mi.name, mi.display_name, mi.quantity_g, mi.off_id, mi.confidence,
 		       COALESCE(GROUP_CONCAT(t.tag), '')
 		FROM meal_items mi
 		LEFT JOIN meal_item_tags t ON t.meal_item_id = mi.id
 		WHERE mi.meal_id IN (%s)
-		GROUP BY mi.id`, placeholders)
+		GROUP BY mi.id`, placeholders) //nolint:gosec // G201: placeholders only, ids are bound
 	rows, err := db.QueryContext(r.Context(), q, mealIDs...)
 	if err != nil {
 		return nil, err

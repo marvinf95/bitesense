@@ -57,8 +57,14 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<void> _persist(Map<String, dynamic> data) async {
-    await _storage.write(key: 'access_token', value: data['access_token'] as String);
-    await _storage.write(key: 'refresh_token', value: data['refresh_token'] as String);
+    await _storage.write(
+      key: 'access_token',
+      value: data['access_token'] as String,
+    );
+    await _storage.write(
+      key: 'refresh_token',
+      value: data['refresh_token'] as String,
+    );
     await _storage.write(key: 'user_id', value: data['user_id'] as String);
     state = AuthState(isAuthenticated: true, userId: data['user_id'] as String);
   }

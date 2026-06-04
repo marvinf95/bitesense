@@ -8,12 +8,19 @@ class SymptomsRepository {
   SymptomsRepository(this._dio);
   final Dio _dio;
 
-  Future<List<Symptom>> list({DateTime? from, DateTime? to, String? type}) async {
-    final resp = await _dio.get('/symptoms', queryParameters: {
-      if (from != null) 'from': from.toUtc().toIso8601String(),
-      if (to != null) 'to': to.toUtc().toIso8601String(),
-      if (type != null) 'type': type,
-    });
+  Future<List<Symptom>> list({
+    DateTime? from,
+    DateTime? to,
+    String? type,
+  }) async {
+    final resp = await _dio.get<dynamic>(
+      '/symptoms',
+      queryParameters: {
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+        if (type != null) 'type': type,
+      },
+    );
     final list = (resp.data['symptoms'] as List).cast<Map<String, dynamic>>();
     return list.map(Symptom.fromJson).toList();
   }
@@ -26,19 +33,22 @@ class SymptomsRepository {
     int? bristolStool,
     String? notes,
   }) async {
-    final resp = await _dio.post('/symptoms', data: {
-      'occurred_at': occurredAt.toUtc().toIso8601String(),
-      'type': type,
-      'severity': severity,
-      if (durationMin != null) 'duration_min': durationMin,
-      if (bristolStool != null) 'bristol_stool': bristolStool,
-      if (notes != null) 'notes': notes,
-    });
+    final resp = await _dio.post<dynamic>(
+      '/symptoms',
+      data: {
+        'occurred_at': occurredAt.toUtc().toIso8601String(),
+        'type': type,
+        'severity': severity,
+        if (durationMin != null) 'duration_min': durationMin,
+        if (bristolStool != null) 'bristol_stool': bristolStool,
+        if (notes != null) 'notes': notes,
+      },
+    );
     return Symptom.fromJson(resp.data as Map<String, dynamic>);
   }
 
   Future<void> delete(String id) async {
-    await _dio.delete('/symptoms/$id');
+    await _dio.delete<dynamic>('/symptoms/$id');
   }
 }
 

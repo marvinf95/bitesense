@@ -9,16 +9,19 @@ class MealsRepository {
   final Dio _dio;
 
   Future<List<Meal>> list({DateTime? from, DateTime? to}) async {
-    final resp = await _dio.get('/meals', queryParameters: {
-      if (from != null) 'from': from.toUtc().toIso8601String(),
-      if (to != null) 'to': to.toUtc().toIso8601String(),
-    });
+    final resp = await _dio.get<dynamic>(
+      '/meals',
+      queryParameters: {
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+      },
+    );
     final list = (resp.data['meals'] as List).cast<Map<String, dynamic>>();
     return list.map(Meal.fromJson).toList();
   }
 
   Future<Meal> get(String id) async {
-    final resp = await _dio.get('/meals/$id');
+    final resp = await _dio.get<dynamic>('/meals/$id');
     return Meal.fromJson(resp.data as Map<String, dynamic>);
   }
 
@@ -29,22 +32,31 @@ class MealsRepository {
     String? notes,
     required List<MealItem> items,
   }) async {
-    final resp = await _dio.post('/meals', data: {
-      'eaten_at': eatenAt.toUtc().toIso8601String(),
-      'source': source,
-      if (title != null) 'title': title,
-      if (notes != null) 'notes': notes,
-      'items': items.map((e) => e.toJson()..remove('id')..remove('meal_id')).toList(),
-    });
+    final resp = await _dio.post<dynamic>(
+      '/meals',
+      data: {
+        'eaten_at': eatenAt.toUtc().toIso8601String(),
+        'source': source,
+        if (title != null) 'title': title,
+        if (notes != null) 'notes': notes,
+        'items': items
+            .map(
+              (e) => e.toJson()
+                ..remove('id')
+                ..remove('meal_id'),
+            )
+            .toList(),
+      },
+    );
     return Meal.fromJson(resp.data as Map<String, dynamic>);
   }
 
   Future<void> delete(String id) async {
-    await _dio.delete('/meals/$id');
+    await _dio.delete<dynamic>('/meals/$id');
   }
 
   Future<String> createFromBarcode(String ean) async {
-    final resp = await _dio.post('/meals/from-barcode/$ean');
+    final resp = await _dio.post<dynamic>('/meals/from-barcode/$ean');
     return resp.data['meal_id'] as String;
   }
 
@@ -52,7 +64,7 @@ class MealsRepository {
     final form = FormData.fromMap({
       'photo': await MultipartFile.fromFile(localFilePath),
     });
-    final resp = await _dio.post('/meals/from-image', data: form);
+    final resp = await _dio.post<dynamic>('/meals/from-image', data: form);
     return resp.data['meal_id'] as String;
   }
 }

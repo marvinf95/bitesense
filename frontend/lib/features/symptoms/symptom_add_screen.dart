@@ -61,24 +61,50 @@ class _SymptomAddScreenState extends ConsumerState<SymptomAddScreen> {
             decoration: InputDecoration(labelText: t.symptomFieldType),
             items: [
               for (final s in symptomTypes)
-                DropdownMenuItem(value: s, child: Text(symptomLabel(context, s))),
+                DropdownMenuItem(
+                  value: s,
+                  child: Text(symptomLabel(context, s)),
+                ),
             ],
             onChanged: (v) => setState(() => _type = v ?? 'other'),
           ),
           const SizedBox(height: 16),
           Text('${t.symptomFieldSeverity}: ${_severity.round()}'),
-          Slider(value: _severity, min: 1, max: 10, divisions: 9, label: '${_severity.round()}', onChanged: (v) => setState(() => _severity = v)),
+          Slider(
+            value: _severity,
+            min: 1,
+            max: 10,
+            divisions: 9,
+            label: '${_severity.round()}',
+            onChanged: (v) => setState(() => _severity = v),
+          ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(t.symptomFieldTime),
             subtitle: Text('${_occurredAt.toLocal()}'),
             trailing: const Icon(Icons.edit),
             onTap: () async {
-              final picked = await showDatePicker(context: context, initialDate: _occurredAt, firstDate: DateTime(2020), lastDate: DateTime(2100));
-              if (picked == null || !mounted) return;
-              final tm = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_occurredAt));
-              if (!mounted) return;
-              setState(() => _occurredAt = DateTime(picked.year, picked.month, picked.day, tm?.hour ?? 0, tm?.minute ?? 0));
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: _occurredAt,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2100),
+              );
+              if (picked == null || !context.mounted) return;
+              final tm = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.fromDateTime(_occurredAt),
+              );
+              if (!context.mounted) return;
+              setState(
+                () => _occurredAt = DateTime(
+                  picked.year,
+                  picked.month,
+                  picked.day,
+                  tm?.hour ?? 0,
+                  tm?.minute ?? 0,
+                ),
+              );
             },
           ),
           TextFormField(
@@ -93,14 +119,25 @@ class _SymptomAddScreenState extends ConsumerState<SymptomAddScreen> {
               spacing: 6,
               children: [
                 for (var i = 1; i <= 7; i++)
-                  ChoiceChip(label: Text('$i'), selected: _bristol == i, onSelected: (_) => setState(() => _bristol = i)),
+                  ChoiceChip(
+                    label: Text('$i'),
+                    selected: _bristol == i,
+                    onSelected: (_) => setState(() => _bristol = i),
+                  ),
               ],
             ),
           ],
           const SizedBox(height: 12),
-          TextField(controller: _notes, decoration: InputDecoration(labelText: t.symptomFieldNotes), maxLines: 3),
+          TextField(
+            controller: _notes,
+            decoration: InputDecoration(labelText: t.symptomFieldNotes),
+            maxLines: 3,
+          ),
           const SizedBox(height: 24),
-          FilledButton(onPressed: _saving ? null : _save, child: Text(t.actionSave)),
+          FilledButton(
+            onPressed: _saving ? null : _save,
+            child: Text(t.actionSave),
+          ),
         ],
       ),
     );

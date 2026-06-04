@@ -12,7 +12,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "modernc.org/sqlite"
+	_ "modernc.org/sqlite" // register pure-Go SQLite driver
 )
 
 //go:embed all:migrations

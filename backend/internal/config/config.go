@@ -10,16 +10,16 @@ import (
 )
 
 type Config struct {
-	Addr        string
-	DataDir     string
-	UploadDir   string
-	DBPath      string
-	LogLevel    string
-	LogFormat   string
+	Addr      string
+	DataDir   string
+	UploadDir string
+	DBPath    string
+	LogLevel  string
+	LogFormat string
 
-	JWTSecret     []byte
-	AccessTTL     time.Duration
-	RefreshTTL    time.Duration
+	JWTSecret  []byte
+	AccessTTL  time.Duration
+	RefreshTTL time.Duration
 
 	GeminiAPIKey    string
 	AnthropicAPIKey string

@@ -26,8 +26,8 @@ func NewGeminiClient(apiKey string) *GeminiClient {
 }
 
 type geminiPart struct {
-	Text       string             `json:"text,omitempty"`
-	InlineData *geminiInlineData  `json:"inline_data,omitempty"`
+	Text       string            `json:"text,omitempty"`
+	InlineData *geminiInlineData `json:"inline_data,omitempty"`
 }
 
 type geminiInlineData struct {

@@ -9,11 +9,11 @@ type Result struct {
 }
 
 type Food struct {
-	Name                string   `json:"name"`
-	Ingredients         []string `json:"ingredients"`
-	EstimatedQuantityG  float64  `json:"estimated_quantity_g"`
-	Allergens           []string `json:"allergens"`
-	Confidence          float64  `json:"confidence"`
+	Name               string   `json:"name"`
+	Ingredients        []string `json:"ingredients"`
+	EstimatedQuantityG float64  `json:"estimated_quantity_g"`
+	Allergens          []string `json:"allergens"`
+	Confidence         float64  `json:"confidence"`
 }
 
 // The shared JSON schema instructed in both prompts. Kept as one source of truth.

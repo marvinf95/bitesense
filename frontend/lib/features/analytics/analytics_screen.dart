@@ -19,7 +19,12 @@ class AnalyticsScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text(t.errorGeneric)),
         data: (list) {
           if (list.isEmpty) {
-            return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(t.analyticsEmpty, textAlign: TextAlign.center)));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(t.analyticsEmpty, textAlign: TextAlign.center),
+              ),
+            );
           }
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(correlationsProvider),
@@ -30,18 +35,24 @@ class AnalyticsScreen extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Text(t.analyticsDisclaimer, style: Theme.of(context).textTheme.bodySmall),
+                    child: Text(
+                      t.analyticsDisclaimer,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 for (final s in list)
                   Card(
                     child: ListTile(
-                      title: Text('${s.food} ↔ ${symptomLabel(context, s.symptomType)}'),
+                      title: Text(
+                        '${s.food} ↔ ${symptomLabel(context, s.symptomType)}',
+                      ),
                       subtitle: Text(
                         '${_tierLabel(t, s.tier)} · n=${s.n} · RR=${s.riskRatio.toStringAsFixed(1)} · Δ${s.avgHoursLag.toStringAsFixed(1)}h',
                       ),
-                      trailing: Chip(label: Text(s.avgSeverity.toStringAsFixed(1))),
+                      trailing:
+                          Chip(label: Text(s.avgSeverity.toStringAsFixed(1))),
                     ),
                   ),
               ],

@@ -14,7 +14,9 @@ class SymptomsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = AppLocalizations.of(context);
     final symptoms = ref.watch(symptomsListProvider);
-    final fmt = DateFormat.yMMMEd(Localizations.localeOf(context).toLanguageTag()).add_Hm();
+    final fmt =
+        DateFormat.yMMMEd(Localizations.localeOf(context).toLanguageTag())
+            .add_Hm();
 
     return Scaffold(
       appBar: AppBar(title: Text(t.navSymptoms)),
@@ -28,7 +30,12 @@ class SymptomsScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text(t.errorGeneric)),
         data: (list) {
           if (list.isEmpty) {
-            return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(t.symptomsEmpty, textAlign: TextAlign.center)));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(t.symptomsEmpty, textAlign: TextAlign.center),
+              ),
+            );
           }
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(symptomsListProvider),
@@ -41,7 +48,9 @@ class SymptomsScreen extends ConsumerWidget {
                   leading: CircleAvatar(child: Text('${s.severity}')),
                   title: Text(symptomLabel(context, s.type)),
                   subtitle: Text(fmt.format(s.occurredAt.toLocal())),
-                  trailing: s.bristolStool == null ? null : Chip(label: Text('Bristol ${s.bristolStool}')),
+                  trailing: s.bristolStool == null
+                      ? null
+                      : Chip(label: Text('Bristol ${s.bristolStool}')),
                 );
               },
             ),

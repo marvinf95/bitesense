@@ -28,6 +28,7 @@ class LocaleController extends StateNotifier<Locale?> {
   }
 }
 
-final localeControllerProvider = StateNotifierProvider<LocaleController, Locale?>(
+final localeControllerProvider =
+    StateNotifierProvider<LocaleController, Locale?>(
   (ref) => LocaleController(ref.read(secureStorageProvider)),
 );

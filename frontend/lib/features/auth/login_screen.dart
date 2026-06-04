@@ -32,10 +32,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _error = null;
     });
     try {
-      await ref.read(authControllerProvider.notifier).login(_email.text.trim(), _password.text);
+      await ref
+          .read(authControllerProvider.notifier)
+          .login(_email.text.trim(), _password.text);
       if (mounted) context.go('/meals');
     } catch (_) {
-      if (mounted) setState(() => _error = AppLocalizations.of(context).authInvalidCredentials);
+      if (mounted) {
+        setState(
+          () => _error = AppLocalizations.of(context).authInvalidCredentials,
+        );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -62,15 +68,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               TextFormField(
                 controller: _password,
                 obscureText: true,
-                decoration: InputDecoration(labelText: t.authPassword, helperText: t.authPasswordHint),
-                validator: (v) => (v ?? '').length >= 8 ? null : t.authPasswordTooShort,
+                decoration: InputDecoration(
+                  labelText: t.authPassword,
+                  helperText: t.authPasswordHint,
+                ),
+                validator: (v) =>
+                    (v ?? '').length >= 8 ? null : t.authPasswordTooShort,
               ),
               const SizedBox(height: 16),
-              if (_error != null) Text(_error!, style: const TextStyle(color: Colors.red)),
+              if (_error != null)
+                Text(_error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _loading ? null : _submit,
-                child: _loading ? const CircularProgressIndicator() : Text(t.authLogin),
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : Text(t.authLogin),
               ),
               TextButton(
                 onPressed: () => context.go('/register'),

@@ -24,9 +24,16 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Error().Err(err).Msg("server exited")
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatal().Err(err).Msg("load config")
+		return err
 	}
 
 	level, _ := zerolog.ParseLevel(cfg.LogLevel)
@@ -37,15 +44,15 @@ func main() {
 
 	conn, err := db.Open(cfg.DBPath)
 	if err != nil {
-		log.Fatal().Err(err).Msg("open db")
+		return err
 	}
 	defer conn.Close()
 	if err := db.Migrate(conn); err != nil {
-		log.Fatal().Err(err).Msg("migrate db")
+		return err
 	}
 
 	if err := os.MkdirAll(cfg.UploadDir, 0o750); err != nil {
-		log.Fatal().Err(err).Msg("uploads dir")
+		return err
 	}
 
 	authSvc := auth.NewService(conn, cfg.JWTSecret, cfg.AccessTTL, cfg.RefreshTTL)
@@ -80,19 +87,25 @@ func main() {
 		IdleTimeout:       2 * time.Minute,
 	}
 
+	listenErr := make(chan error, 1)
 	go func() {
 		log.Info().Str("addr", cfg.Addr).Msg("listening")
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal().Err(err).Msg("listen")
+			listenErr <- err
 		}
+		close(listenErr)
 	}()
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	<-sig
-	log.Info().Msg("shutting down")
+	select {
+	case err := <-listenErr:
+		return err
+	case <-sig:
+		log.Info().Msg("shutting down")
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	_ = srv.Shutdown(ctx)
+	return srv.Shutdown(ctx)
 }

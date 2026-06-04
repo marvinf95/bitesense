@@ -9,7 +9,7 @@ type HealthHandler struct {
 	DB *sql.DB
 }
 
-func (h *HealthHandler) Live(w http.ResponseWriter, r *http.Request) {
+func (h *HealthHandler) Live(w http.ResponseWriter, _ *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 

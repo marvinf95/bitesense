@@ -15,12 +15,12 @@ import (
 )
 
 type Deps struct {
-	Cfg     *config.Config
-	DB      *sql.DB
-	Auth    *auth.Service
-	Vision  VisionAnalyzer
-	PDF     PDFExporter
-	Corr    CorrelationAnalyzer
+	Cfg    *config.Config
+	DB     *sql.DB
+	Auth   *auth.Service
+	Vision VisionAnalyzer
+	PDF    PDFExporter
+	Corr   CorrelationAnalyzer
 }
 
 // VisionAnalyzer wraps the per-image analysis pipeline. Implemented in internal/vision.
@@ -38,14 +38,14 @@ type CorrelationAnalyzer interface {
 }
 
 type Suspect struct {
-	Food         string  `json:"food"`
-	SymptomType  string  `json:"symptom_type"`
-	RiskRatio    float64 `json:"risk_ratio"`
-	PValue       float64 `json:"p_value"`
-	N            int     `json:"n"`
-	AvgHoursLag  float64 `json:"avg_hours_lag"`
-	Severity     float64 `json:"avg_severity"`
-	Tier         string  `json:"tier"` // STRONG_SUSPECT|SUSPECT|WEAK_SIGNAL
+	Food        string  `json:"food"`
+	SymptomType string  `json:"symptom_type"`
+	RiskRatio   float64 `json:"risk_ratio"`
+	PValue      float64 `json:"p_value"`
+	N           int     `json:"n"`
+	AvgHoursLag float64 `json:"avg_hours_lag"`
+	Severity    float64 `json:"avg_severity"`
+	Tier        string  `json:"tier"` // STRONG_SUSPECT|SUSPECT|WEAK_SIGNAL
 }
 
 func NewRouter(d Deps) http.Handler {

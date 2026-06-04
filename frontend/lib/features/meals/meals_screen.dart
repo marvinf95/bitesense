@@ -13,8 +13,10 @@ class MealsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = AppLocalizations.of(context);
     final meals = ref.watch(mealsListProvider);
-    final dateFmt = DateFormat.yMMMEd(Localizations.localeOf(context).toLanguageTag());
-    final timeFmt = DateFormat.Hm(Localizations.localeOf(context).toLanguageTag());
+    final dateFmt =
+        DateFormat.yMMMEd(Localizations.localeOf(context).toLanguageTag());
+    final timeFmt =
+        DateFormat.Hm(Localizations.localeOf(context).toLanguageTag());
 
     return Scaffold(
       appBar: AppBar(title: Text(t.navMeals)),
@@ -28,7 +30,12 @@ class MealsScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text(t.errorGeneric)),
         data: (list) {
           if (list.isEmpty) {
-            return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(t.mealsEmpty, textAlign: TextAlign.center)));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(t.mealsEmpty, textAlign: TextAlign.center),
+              ),
+            );
           }
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(mealsListProvider),
@@ -40,8 +47,15 @@ class MealsScreen extends ConsumerWidget {
                 final subtitle = m.items.map((it) => it.displayName).join(', ');
                 return ListTile(
                   leading: const CircleAvatar(child: Icon(Icons.restaurant)),
-                  title: Text(m.title ?? '${dateFmt.format(m.eatenAt)} · ${timeFmt.format(m.eatenAt)}'),
-                  subtitle: Text(subtitle.isEmpty ? '—' : subtitle, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  title: Text(
+                    m.title ??
+                        '${dateFmt.format(m.eatenAt)} · ${timeFmt.format(m.eatenAt)}',
+                  ),
+                  subtitle: Text(
+                    subtitle.isEmpty ? '—' : subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   trailing: Text(timeFmt.format(m.eatenAt)),
                   onTap: () => context.go('/meals/${m.id}'),
                 );

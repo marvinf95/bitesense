@@ -20,7 +20,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: ref.watch(authListenableProvider),
     redirect: (context, state) {
       final loggedIn = ref.read(authControllerProvider).isAuthenticated;
-      final loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
+      final loggingIn = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
       if (!loggedIn && !loggingIn) return '/login';
       if (loggedIn && loggingIn) return '/meals';
       return null;
@@ -38,7 +39,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(path: 'add', builder: (_, __) => const MealAddScreen()),
               GoRoute(
                 path: ':id',
-                builder: (_, state) => MealDetailScreen(id: state.pathParameters['id']!),
+                builder: (_, state) =>
+                    MealDetailScreen(id: state.pathParameters['id']!),
               ),
             ],
           ),
@@ -46,12 +48,21 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/symptoms',
             builder: (_, __) => const SymptomsScreen(),
             routes: [
-              GoRoute(path: 'add', builder: (_, __) => const SymptomAddScreen()),
+              GoRoute(
+                path: 'add',
+                builder: (_, __) => const SymptomAddScreen(),
+              ),
             ],
           ),
-          GoRoute(path: '/analytics', builder: (_, __) => const AnalyticsScreen()),
+          GoRoute(
+            path: '/analytics',
+            builder: (_, __) => const AnalyticsScreen(),
+          ),
           GoRoute(path: '/export', builder: (_, __) => const ExportScreen()),
-          GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+          GoRoute(
+            path: '/settings',
+            builder: (_, __) => const SettingsScreen(),
+          ),
         ],
       ),
     ],
