@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS sync_log;
+DROP TABLE IF EXISTS vision_cache;
+DROP TABLE IF EXISTS meal_favorites;
+DROP TABLE IF EXISTS symptoms;
+DROP TABLE IF EXISTS meal_item_tags;
+DROP TABLE IF EXISTS meal_items;
+DROP TABLE IF EXISTS meals;
+DROP TABLE IF EXISTS refresh_tokens;
+DROP TABLE IF EXISTS users;

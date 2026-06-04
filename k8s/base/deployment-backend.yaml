@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitesense-backend
+  namespace: bitesense
+  labels:
+    app.kubernetes.io/name: bitesense-backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # SQLite + RWO PVC: avoid two writers.
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bitesense-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bitesense-backend
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: backend
+          image: ghcr.io/marvinf95/bitesense-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: bitesense-secrets
+          env:
+            - name: BITESENSE_ADDR
+              value: ":8080"
+            - name: BITESENSE_DATA_DIR
+              value: /data
+            - name: BITESENSE_UPLOAD_DIR
+              value: /data/uploads
+            - name: BITESENSE_DB_PATH
+              value: /data/bitesense.db
+            - name: BITESENSE_LOG_FORMAT
+              value: json
+            - name: BITESENSE_CORS_ALLOWED_ORIGINS
+              value: "https://*.ts.net,http://localhost:*"
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 256Mi }
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /livez, port: http }
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: bitesense-data
+        - name: tmp
+          emptyDir: { medium: Memory, sizeLimit: 64Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitesense-backend
+  namespace: bitesense
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: bitesense-backend
+  ports:
+    - port: 80
+      targetPort: http
+      name: http

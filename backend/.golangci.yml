@@ -1,0 +1,27 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gosec
+    - revive
+    - misspell
+    - bodyclose
+    - gocritic
+    - gofmt
+    - unconvert
+
+linters-settings:
+  gosec:
+    excludes:
+      - G404 # math/rand: we use crypto/rand where needed
+
+issues:
+  exclude-dirs:
+    - migrations
