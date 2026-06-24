@@ -1,0 +1,49 @@
+name: Dependabot Auto-Merge
+
+# Auto-merge Dependabot PRs up to (but excluding) major bumps.
+# Major bumps get labelled `dep-major-needs-review` for Marvin to review.
+# CI failures don't merge (GitHub's auto-merge holds them); the Pi-side
+# sweep notifies via WhatsApp once when a Dependabot PR sits with a failed
+# check.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge patch / minor
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --squash --delete-branch "$PR_URL"
+
+      - name: Label major bump for manual review
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          DEP_NAME: ${{ steps.meta.outputs.dependency-name }}
+          DEP_PREV: ${{ steps.meta.outputs.previous-version }}
+          DEP_NEW: ${{ steps.meta.outputs.new-version }}
+        run: |
+          gh pr edit "$PR_URL" --add-label dep-major-needs-review
+          gh pr comment "$PR_URL" --body "Major bump (\`$DEP_NAME\` $DEP_PREV → $DEP_NEW) — bitte manuell prüfen."

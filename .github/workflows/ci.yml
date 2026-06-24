@@ -80,7 +80,17 @@ jobs:
         run: flutter test --coverage
 
       - name: Build web
-        run: flutter build web --release
+        # Bake the prod API base-URL into the bundle so the artifact the Pi
+        # downloads is deploy-ready (no rebuild on the Pi).
+        run: flutter build web --release --base-href / --dart-define=BITESENSE_API=https://bitesense.tailb969ce.ts.net
+
+      - name: Upload web bundle (consumed by Pi auto-deploy)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-${{ github.sha }}
+          path: frontend/build/web/
+          retention-days: 14
 
   security:
     name: Security scan
