@@ -26,15 +26,16 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Auto-merge patch / minor
+        # No `gh pr review --approve` — GitHub Actions tokens are not
+        # permitted to approve PRs, and branch protection doesn't require
+        # approvals anyway. `gh pr merge --auto` waits for required checks.
         if: |
           steps.meta.outputs.update-type == 'version-update:semver-patch' ||
           steps.meta.outputs.update-type == 'version-update:semver-minor'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: |
-          gh pr review --approve "$PR_URL"
-          gh pr merge --auto --squash --delete-branch "$PR_URL"
+        run: gh pr merge --auto --squash --delete-branch "$PR_URL"
 
       - name: Label major bump for manual review
         if: steps.meta.outputs.update-type == 'version-update:semver-major'
