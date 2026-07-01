@@ -30,7 +30,7 @@ dependencies:
 
   # Pickers / scanners
   image_picker: ^1.1.2
-  mobile_scanner: ^5.2.3
+  mobile_scanner: ^7.2.0
 
   # Charts (correlation visualisations)
   fl_chart: ^0.69.0
