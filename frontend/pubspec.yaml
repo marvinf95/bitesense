@@ -24,7 +24,7 @@ dependencies:
 
   # Local DB
   drift: ^2.20.0
-  drift_flutter: ^0.2.0
+  drift_flutter: ^0.3.0
   path_provider: ^2.1.4
   path: ^1.9.0
 
